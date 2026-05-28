@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodRescue Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="header">
+        <h1>FoodRescue Dashboard</h1>
+        <p>Menampilkan data dari Back-End Express dan MongoDB Atlas</p>
+    </header>
+
+    <main class="container">
+        <section class="card">
+        <div class="section-header">
+            <div>
+            <h2>Status Database</h2>
+            <p>Mengecek koneksi API ke MongoDB Atlas</p>
+            </div>
+            <button onclick="checkDatabase()">Cek Database</button>
+        </div>
+
+        <div id="databaseStatus" class="status-box">
+            Belum dicek
+        </div>
+        </section>
+
+        <section class="card">
+        <div class="section-header">
+            <div>
+            <h2>Data User</h2>
+            <p>Data diambil dari endpoint <b>/api/users</b></p>
+            </div>
+            <button onclick="getUsers()">Tampilkan User</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+            <thead>
+                <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Tipe User</th>
+                <th>Kota</th>
+                <th>Verifikasi</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <tr>
+                <td colspan="6" class="empty">Data user belum dimuat</td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        </section>
+
+        <section class="card">
+        <div class="section-header">
+            <div>
+            <h2>Data Food Surplus</h2>
+            <p>Data diambil dari endpoint <b>/api/food-surplus</b></p>
+            </div>
+            <button onclick="getFoodSurplus()">Tampilkan Food Surplus</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+            <thead>
+                <tr>
+                <th>Donor</th>
+                <th>Tipe Donor</th>
+                <th>Jenis Makanan</th>
+                <th>Kategori</th>
+                <th>Jumlah KG</th>
+                <th>Kota</th>
+                <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="foodTableBody">
+                <tr>
+                <td colspan="7" class="empty">Data makanan belum dimuat</td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
