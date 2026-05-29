@@ -8,84 +8,172 @@
 </head>
 <body>
     <header class="header">
+        <div class="header-badge">AI Integrated Dashboard</div>
         <h1>FoodRescue Dashboard</h1>
-        <p>Menampilkan data dari Back-End Express dan MongoDB Atlas</p>
+        <p>Monitoring data FoodRescue, integrasi Back-End Express, MongoDB Atlas, AI Prediksi, dan Chatbot.</p>
     </header>
 
     <main class="container">
-        <section class="card">
-        <div class="section-header">
-            <div>
-            <h2>Status Database</h2>
-            <p>Mengecek koneksi API ke MongoDB Atlas</p>
-            </div>
-            <button onclick="checkDatabase()">Cek Database</button>
-        </div>
+        <section class="grid grid-2">
+            <article class="card highlight-card">
+                <h2>Status Integrasi</h2>
+                <p>Dashboard ini terhubung ke Express.js sebagai API utama. Fitur AI dipanggil melalui backend Express, lalu diteruskan ke service Python FastAPI.</p>
+                <div class="flow-box">
+                    Frontend → Express.js → Python AI Service → Model AI → Express.js → Frontend
+                </div>
+            </article>
 
-        <div id="databaseStatus" class="status-box">
-            Belum dicek
-        </div>
+            <article class="card">
+                <div class="section-header compact">
+                    <div>
+                        <h2>Status Database</h2>
+                        <p>Mengecek koneksi API ke MongoDB Atlas</p>
+                    </div>
+                    <button onclick="checkDatabase()">Cek Database</button>
+                </div>
+                <div id="databaseStatus" class="status-box">Belum dicek</div>
+            </article>
         </section>
 
         <section class="card">
-        <div class="section-header">
-            <div>
-            <h2>Data User</h2>
-            <p>Data diambil dari endpoint <b>/api/users</b></p>
+            <div class="section-header">
+                <div>
+                    <h2>AI Prediksi Prioritas Food Rescue</h2>
+                    <p>Input data makanan, lalu sistem akan meminta hasil prediksi ke endpoint <b>/api/ai/predict</b>.</p>
+                </div>
+                <button class="secondary" onclick="fillPredictionSample()">Isi Contoh</button>
             </div>
-            <button onclick="getUsers()">Tampilkan User</button>
-        </div>
 
-        <div class="table-wrapper">
-            <table>
-            <thead>
-                <tr>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Tipe User</th>
-                <th>Kota</th>
-                <th>Verifikasi</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody">
-                <tr>
-                <td colspan="6" class="empty">Data user belum dimuat</td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
+            <form id="predictionForm" class="form-grid">
+                <label>
+                    Jarak Pengambilan (km)
+                    <input type="number" step="0.01" name="distance_km" placeholder="Contoh: 3" required />
+                </label>
+                <label>
+                    Sisa Waktu Kedaluwarsa (jam)
+                    <input type="number" step="0.01" name="expiry_hours" placeholder="Contoh: 12" required />
+                </label>
+                <label>
+                    Estimasi Waktu Pickup (jam)
+                    <input type="number" step="0.01" name="pickup_time_hours" placeholder="Contoh: 2" required />
+                </label>
+                <label>
+                    Urgency Score
+                    <input type="number" step="0.01" name="urgency_score" placeholder="Contoh: 4" required />
+                </label>
+                <label>
+                    Jumlah Makanan (kg)
+                    <input type="number" step="0.01" name="quantity_kg" placeholder="Contoh: 10" required />
+                </label>
+                <label>
+                    Food Density per km
+                    <input type="number" step="0.01" name="food_density_per_km" placeholder="Contoh: 3.3" required />
+                </label>
+                <label>
+                    CO2 per kg
+                    <input type="number" step="0.01" name="co2_per_kg" placeholder="Contoh: 2.5" required />
+                </label>
+                <label>
+                    Methane Factor
+                    <input type="number" step="0.01" name="methane_factor" placeholder="Contoh: 0.8" required />
+                </label>
+                <label>
+                    Water Usage
+                    <input type="number" step="0.01" name="water_usage" placeholder="Contoh: 2500" required />
+                </label>
+                <label>
+                    Donor Type Encoded
+                    <input type="number" step="1" name="donor_type_encoded" placeholder="Contoh: 1" required />
+                </label>
+                <label>
+                    Category Encoded
+                    <input type="number" step="1" name="category_encoded" placeholder="Contoh: 2" required />
+                </label>
+            </form>
+
+            <div class="action-row">
+                <button onclick="predictFoodRescue()">Jalankan Prediksi AI</button>
+                <button class="ghost" onclick="resetPredictionForm()">Reset</button>
+            </div>
+
+            <div id="predictionResult" class="result-box muted">Hasil prediksi belum tersedia.</div>
         </section>
 
         <section class="card">
-        <div class="section-header">
-            <div>
-            <h2>Data Food Surplus</h2>
-            <p>Data diambil dari endpoint <b>/api/food-surplus</b></p>
+            <div class="section-header">
+                <div>
+                    <h2>Chatbot FoodRescue</h2>
+                    <p>Kirim pertanyaan ke endpoint <b>/api/chatbot/chat</b> untuk mendapatkan kategori/respons dari model chatbot.</p>
+                </div>
             </div>
-            <button onclick="getFoodSurplus()">Tampilkan Food Surplus</button>
-        </div>
 
-        <div class="table-wrapper">
-            <table>
-            <thead>
-                <tr>
-                <th>Donor</th>
-                <th>Tipe Donor</th>
-                <th>Jenis Makanan</th>
-                <th>Kategori</th>
-                <th>Jumlah KG</th>
-                <th>Kota</th>
-                <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="foodTableBody">
-                <tr>
-                <td colspan="7" class="empty">Data makanan belum dimuat</td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
+            <div class="chat-layout">
+                <textarea id="chatMessage" rows="4" placeholder="Contoh: bagaimana cara menyumbangkan makanan?" ></textarea>
+                <button onclick="sendChatbotMessage()">Kirim ke Chatbot</button>
+            </div>
+
+            <div id="chatbotResult" class="result-box muted">Belum ada pesan chatbot.</div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <div>
+                    <h2>Data User</h2>
+                    <p>Data diambil dari endpoint <b>/api/users</b></p>
+                </div>
+                <button onclick="getUsers()">Tampilkan User</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Tipe User</th>
+                            <th>Kota</th>
+                            <th>Verifikasi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <tr>
+                            <td colspan="6" class="empty">Data user belum dimuat</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">
+                <div>
+                    <h2>Data Food Surplus</h2>
+                    <p>Data diambil dari endpoint <b>/api/food-surplus</b></p>
+                </div>
+                <button onclick="getFoodSurplus()">Tampilkan Food Surplus</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Donor</th>
+                            <th>Tipe Donor</th>
+                            <th>Jenis Makanan</th>
+                            <th>Kategori</th>
+                            <th>Jumlah KG</th>
+                            <th>Kota</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="foodTableBody">
+                        <tr>
+                            <td colspan="7" class="empty">Data makanan belum dimuat</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 

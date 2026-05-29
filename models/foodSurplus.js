@@ -86,5 +86,5 @@ const foodSurplusSchema = new mongoose.Schema({
     }, {
     timestamps: true
     });
-    
+
 module.exports = mongoose.model("FoodSurplus", foodSurplusSchema, "food_surplus");
