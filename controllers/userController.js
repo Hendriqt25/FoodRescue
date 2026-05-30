@@ -1,101 +1,139 @@
 const User = require("../models/user");
 
-const getUser = async (req, res) => {
+const loginUser = async (req, res) => {
     try {
-        const users = await User.find().limit(20);
+        const { email, password } = req.body;
 
-        res.status(200).json({
-        success: true,
-        message: "User ditemukan",
-        data: users
-        });
-    } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: "User gagal ditemukan",
-        error: error.message
-        });
-  }
-};
-
-const getUserById = async (req, res) => {
-    try {
-        const dataUser = await User.findById(req.params.id);
-
-        if (!dataUser) {
-        return res.status(404).json({
-            success: false,
-            message: "User gagal ditemukan"
-        })
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email dan password wajib diisi",
+            });
         }
 
-        res.status(200).json({
-        success: true,
-        message: "User berhasil ditemukan",
-        data: dataUser
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Email tidak ditemukan",
+            });
+        }
+
+        if (user.password !== password) {
+            return res.status(401).json({
+                success: false,
+                message: "Password salah",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Login berhasil",
+            user: {
+                user_id: user.user_id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                donor_id: user.donor_id,
+            },
         });
     } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: "User gagal ditemukan",
-        error: error.message
+        return res.status(500).json({
+            success: false,
+            message: "Gagal login",
+            error: error.message,
         });
     }
 };
 
-const createUser = async (req, res) => {
+const registerUser = async (req, res) => {
     try {
-        const newUser = await User.create(req.body);
+        const { name, email, password, role, donor_id } = req.body;
 
-        res.status(200).json({
-        success: true,
-        message: "User berhasil dibuat",
-        data: newUser
+        if (!name || !email || !password || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "Nama, email, password, dan role wajib diisi",
+            });
+        }
+
+        if (!["pendonor", "penerima", "admin", "superadmin"].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: "Role tidak valid",
+            });
+        }
+
+        if (role === "pendonor" && !donor_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Donor ID wajib diisi untuk pendonor",
+            });
+        }
+
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "Email sudah terdaftar",
+            });
+        }
+
+        const totalUsers = await User.countDocuments();
+
+        const userId = `U${String(totalUsers + 1).padStart(3, "0")}`;
+
+        const newUser = await User.create({
+            user_id: userId,
+            name,
+            email,
+            password,
+            role,
+            donor_id: role === "pendonor" ? donor_id : null,
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Register berhasil",
+            user: {
+                user_id: newUser.user_id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+                donor_id: newUser.donor_id,
+            },
         });
     } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: "User gagal dibuat",
-        error: error.message
+        return res.status(500).json({
+            success: false,
+            message: "Gagal register",
+            error: error.message,
         });
     }
 };
 
-const updateUser = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
-        const update = await User.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-            new: true,
-            runValidators: true
-        }
-        );
+        const users = await User.find().select("-password");
 
-        if (!update) {
-        return res.status(404).json({
-            success: false,
-            message: "User tidak ditemukan"
-        });
-        }
-
-        res.status(200).json({
-        success: true,
-        message: "Data telah berhasil diupdate",
-        data: update
+        return res.status(200).json({
+            success: true,
+            total: users.length,
+            data: users,
         });
     } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: "Data gagal diupdate",
-        error: error.message
+        return res.status(500).json({
+            success: false,
+            message: "Gagal mengambil data user",
+            error: error.message,
         });
     }
 };
 
 module.exports = {
-    getUser,
-    getUserById,
-    createUser,
-    updateUser
+    loginUser,
+    registerUser,
+    getAllUsers,
 };

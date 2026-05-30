@@ -4,8 +4,8 @@ const PredictionModel = require("../models/prediction");
 const predictionFood = async (req, res) => {
     try {
         const predictionInput = new PredictionModel(req.body);
-        const validation = predictionFood.validate();
-        const payload = prediction.toPayload();
+        const validation = predictionInput.validate();
+        const payload = predictionInput.toPayload();
 
         if (!validation.isValid){
             return res.status(400).json({

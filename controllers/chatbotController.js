@@ -1,5 +1,5 @@
 const axios = require("axios");
-const ChatbotModel = require("../models/chatbotModel");
+const ChatbotModel = require("../models/chatbot");
 
 const chatWithBot = async (req, res) => {
     try {

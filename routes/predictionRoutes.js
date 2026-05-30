@@ -5,4 +5,4 @@ const { predictionFood } = require("../controllers/predictionController");
 
 router.post("/predict", predictionFood);
 
-module.exports = routers
+module.exports = router;

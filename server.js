@@ -6,6 +6,9 @@ const connectDatabase = require("./config/database");
 const databaseRoutes = require("./routes/databaseRoutes");
 const foodSurplusRoutes = require("./routes/foodSurplusRoutes");
 const userRoutes = require("./routes/userRoutes");
+const chatbotRoutes = require("./routes/chatbotRoutes");
+const predictionRoutes = require("./routes/predictionRoutes");
+
 
 dotenv.config();
 
@@ -21,6 +24,8 @@ app.get("/", (req, res) => {
 app.use("/api", databaseRoutes);
 app.use("/api/food-surplus", foodSurplusRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/ai", predictionRoutes);
 
 const PORT = process.env.PORT || 5000;
 

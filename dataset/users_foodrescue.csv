@@ -1,0 +1,8 @@
+user_id,name,email,password,role,donor_id
+U001,Super Admin,superadmin@foodrescue.com,SuperFR@2026,superadmin,
+U002,Admin FoodRescue 1,admin1@foodrescue.com,AdminOne#2026,admin,
+U003,Admin FoodRescue 2,admin2@foodrescue.com,AdminTwo#2026,admin,
+U004,Donor Resto A,donor1@foodrescue.com,DonorA@123,pendonor,D001
+U005,Donor Bakery B,donor2@foodrescue.com,BakeryB@456,pendonor,D002
+U006,Penerima Panti A,penerima1@foodrescue.com,PantiA@789,penerima,
+U007,Penerima Komunitas B,penerima2@foodrescue.com,KomunitasB@321,penerima,

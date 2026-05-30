@@ -1,182 +1,220 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FoodRescue Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodRescue</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header class="header">
-        <div class="header-badge">AI Integrated Dashboard</div>
-        <h1>FoodRescue Dashboard</h1>
-        <p>Monitoring data FoodRescue, integrasi Back-End Express, MongoDB Atlas, AI Prediksi, dan Chatbot.</p>
-    </header>
+  <main>
+    <section id="authPage" class="auth-page">
+      <div class="auth-info">
+        <h1>FoodRescue</h1>
+        <p>Sistem rekomendasi donor makanan, prediksi distribusi, dan chatbot FAQ berbasis AI.</p>
+      </div>
 
-    <main class="container">
-        <section class="grid grid-2">
-            <article class="card highlight-card">
-                <h2>Status Integrasi</h2>
-                <p>Dashboard ini terhubung ke Express.js sebagai API utama. Fitur AI dipanggil melalui backend Express, lalu diteruskan ke service Python FastAPI.</p>
-                <div class="flow-box">
-                    Frontend → Express.js → Python AI Service → Model AI → Express.js → Frontend
-                </div>
-            </article>
+      <div class="auth-card">
+        <div class="tabs">
+          <button id="loginTab" class="active" onclick="showAuthTab('login')">Login</button>
+          <button id="registerTab" onclick="showAuthTab('register')">Register</button>
+        </div>
 
-            <article class="card">
-                <div class="section-header compact">
-                    <div>
-                        <h2>Status Database</h2>
-                        <p>Mengecek koneksi API ke MongoDB Atlas</p>
-                    </div>
-                    <button onclick="checkDatabase()">Cek Database</button>
-                </div>
-                <div id="databaseStatus" class="status-box">Belum dicek</div>
-            </article>
-        </section>
+        <form id="loginForm" class="form">
+          <h2>Login</h2>
+          <label>Email</label>
+          <input id="loginEmail" type="email" required placeholder="penerima1@foodrescue.com" />
+          <label>Password</label>
+          <input id="loginPassword" type="password" required placeholder="Password" />
+          <button type="submit">Masuk</button>
+        </form>
 
-        <section class="card">
-            <div class="section-header">
-                <div>
-                    <h2>AI Prediksi Prioritas Food Rescue</h2>
-                    <p>Input data makanan, lalu sistem akan meminta hasil prediksi ke endpoint <b>/api/ai/predict</b>.</p>
-                </div>
-                <button class="secondary" onclick="fillPredictionSample()">Isi Contoh</button>
+        <form id="registerForm" class="form hidden">
+          <h2>Register</h2>
+          <label>Nama</label>
+          <input id="registerName" type="text" required />
+          <label>Email</label>
+          <input id="registerEmail" type="email" required />
+          <label>Password</label>
+          <input id="registerPassword" type="password" required />
+          <label>Role</label>
+          <select id="registerRole">
+            <option value="penerima">Penerima</option>
+            <option value="pendonor">Pendonor</option>
+          </select>
+          <label id="donorIdLabel" class="hidden">Donor ID</label>
+          <input id="registerDonorId" class="hidden" type="text" placeholder="D003" />
+          <button type="submit">Daftar</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboardPage" class="dashboard hidden">
+      <aside class="sidebar">
+        <h2>FoodRescue</h2>
+        <span id="userRoleBadge" class="role-badge">role</span>
+        <button class="nav-item active" onclick="showMenu('overview')">Overview</button>
+        <button class="nav-item" onclick="showMenu('recommendation')">Rekomendasi</button>
+        <button class="nav-item" onclick="showMenu('prediction')">Prediksi</button>
+        <button class="nav-item" onclick="showMenu('chatbot')">Chatbot</button>
+        <button class="nav-item" onclick="showMenu('profile')">Profil</button>
+        <button class="logout" onclick="logout()">Logout</button>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <h1 id="welcomeTitle">Dashboard</h1>
+            <p id="welcomeSubtitle">Kelola sistem FoodRescue.</p>
+          </div>
+          <div class="user-chip">
+            <b id="currentUserName">User</b>
+            <span id="currentUserEmail">email</span>
+          </div>
+        </header>
+
+        <section id="overviewSection" class="page-section">
+          <div class="stats">
+            <div class="card"><span>Total Donasi</span><strong id="totalDonasi">0</strong></div>
+            <div class="card"><span>Rata-rata Jarak</span><strong id="avgDistance">0 km</strong></div>
+            <div class="card"><span>Prioritas Tinggi</span><strong id="highPriorityCount">0</strong></div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h2>Data Surplus Makanan</h2>
+                <p>Data dari MongoDB collection foodsurpluses.</p>
+              </div>
+              <button onclick="loadFoodSurplus()">Refresh</button>
             </div>
 
-            <form id="predictionForm" class="form-grid">
-                <label>
-                    Jarak Pengambilan (km)
-                    <input type="number" step="0.01" name="distance_km" placeholder="Contoh: 3" required />
-                </label>
-                <label>
-                    Sisa Waktu Kedaluwarsa (jam)
-                    <input type="number" step="0.01" name="expiry_hours" placeholder="Contoh: 12" required />
-                </label>
-                <label>
-                    Estimasi Waktu Pickup (jam)
-                    <input type="number" step="0.01" name="pickup_time_hours" placeholder="Contoh: 2" required />
-                </label>
-                <label>
-                    Urgency Score
-                    <input type="number" step="0.01" name="urgency_score" placeholder="Contoh: 4" required />
-                </label>
-                <label>
-                    Jumlah Makanan (kg)
-                    <input type="number" step="0.01" name="quantity_kg" placeholder="Contoh: 10" required />
-                </label>
-                <label>
-                    Food Density per km
-                    <input type="number" step="0.01" name="food_density_per_km" placeholder="Contoh: 3.3" required />
-                </label>
-                <label>
-                    CO2 per kg
-                    <input type="number" step="0.01" name="co2_per_kg" placeholder="Contoh: 2.5" required />
-                </label>
-                <label>
-                    Methane Factor
-                    <input type="number" step="0.01" name="methane_factor" placeholder="Contoh: 0.8" required />
-                </label>
-                <label>
-                    Water Usage
-                    <input type="number" step="0.01" name="water_usage" placeholder="Contoh: 2500" required />
-                </label>
-                <label>
-                    Donor Type Encoded
-                    <input type="number" step="1" name="donor_type_encoded" placeholder="Contoh: 1" required />
-                </label>
-                <label>
-                    Category Encoded
-                    <input type="number" step="1" name="category_encoded" placeholder="Contoh: 2" required />
-                </label>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Donor</th>
+                    <th>Makanan</th>
+                    <th>Kategori</th>
+                    <th>Jumlah</th>
+                    <th>Expired</th>
+                    <th>Jarak</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="foodTableBody">
+                  <tr><td colspan="7">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="recommendationSection" class="page-section hidden">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h2>Rekomendasi Tempat Donasi</h2>
+                <p>Untuk penerima, donor terbaik muncul paling atas seperti rekomendasi toko di marketplace.</p>
+              </div>
+              <button onclick="loadRecommendations()">Cari Rekomendasi</button>
+            </div>
+
+            <div class="filter-row">
+              <input id="filterCity" placeholder="Filter kota, contoh Samarinda" />
+              <select id="filterCategory">
+                <option value="">Semua kategori</option>
+                <option value="makanan berat">Makanan Berat</option>
+                <option value="roti">Roti</option>
+                <option value="buah">Buah</option>
+                <option value="sayur">Sayur</option>
+                <option value="minuman">Minuman</option>
+              </select>
+              <button onclick="loadRecommendations()">Terapkan</button>
+            </div>
+
+            <div id="recommendationList" class="reco-list">
+              <div class="empty-state">Klik Cari Rekomendasi untuk melihat donor terbaik.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="predictionSection" class="page-section hidden">
+          <div class="prediction-grid">
+            <form id="predictionForm" class="card form">
+              <h2>Prediksi Prioritas Distribusi</h2>
+              <div class="form-grid">
+                <div><label>Jarak (km)</label><input id="distance_km" type="number" step="0.1" value="3.5" required /></div>
+                <div><label>Jumlah (kg)</label><input id="quantity_kg" type="number" step="0.1" value="12" required /></div>
+                <div><label>Expired (jam)</label><input id="expiry_hours" type="number" value="8" required /></div>
+                <div><label>Pickup time (jam)</label><input id="pickup_time_hours" type="number" step="0.1" value="1.5" required /></div>
+                <div><label>CO2 per kg</label><input id="co2_per_kg" type="number" step="0.01" value="2.5" required /></div>
+                <div><label>Methane factor</label><input id="methane_factor" type="number" step="0.01" value="0.8" required /></div>
+                <div><label>Water usage</label><input id="water_usage" type="number" step="0.01" value="15" required /></div>
+                <div><label>Uncertainty</label><input id="uncertainty_factor" type="number" step="0.01" value="0.2" required /></div>
+              </div>
+              <button type="submit">Prediksi</button>
             </form>
 
-            <div class="action-row">
-                <button onclick="predictFoodRescue()">Jalankan Prediksi AI</button>
-                <button class="ghost" onclick="resetPredictionForm()">Reset</button>
+            <div class="card result-card">
+              <span>Hasil Model</span>
+              <h2 id="predictionPriority">Belum ada prediksi</h2>
+              <div class="score"><strong id="predictionScore">0%</strong><small>score</small></div>
+              <p id="predictionRecommendation">Hasil rekomendasi muncul setelah prediksi.</p>
+              <div class="mini-stats">
+                <div><span>Jarak</span><b id="resultDistance">-</b></div>
+                <div><span>Expired</span><b id="resultExpiry">-</b></div>
+                <div><span>Jumlah</span><b id="resultQuantity">-</b></div>
+              </div>
             </div>
-
-            <div id="predictionResult" class="result-box muted">Hasil prediksi belum tersedia.</div>
+          </div>
         </section>
 
-        <section class="card">
-            <div class="section-header">
-                <div>
-                    <h2>Chatbot FoodRescue</h2>
-                    <p>Kirim pertanyaan ke endpoint <b>/api/chatbot/chat</b> untuk mendapatkan kategori/respons dari model chatbot.</p>
+        <section id="chatbotSection" class="page-section hidden">
+          <div class="card chatbot-card">
+            <div class="section-head">
+              <div>
+                <h2>Chatbot FoodRescue</h2>
+                <p>Tanyakan seputar donasi, distribusi, keamanan pangan, monitoring, verifikasi, dan food waste.</p>
+              </div>
+              <span class="ai-badge">AI Active</span>
+            </div>
+
+            <div class="chatbot-shell">
+              <div id="chatbotResult" class="chatbot-messages">
+                <div class="message-row bot">
+                  <div class="chat-avatar bot-avatar">AI</div>
+                  <div class="message-bubble bot-bubble">
+                    <div class="message-name">FoodRescue AI</div>
+                    <p>Halo! Saya siap membantu menjawab pertanyaan tentang FoodRescue.</p>
+                  </div>
                 </div>
-            </div>
+              </div>
 
-            <div class="chat-layout">
-                <textarea id="chatMessage" rows="4" placeholder="Contoh: bagaimana cara menyumbangkan makanan?" ></textarea>
-                <button onclick="sendChatbotMessage()">Kirim ke Chatbot</button>
-            </div>
+              <div class="suggestions">
+                <button type="button" onclick="useSuggestion('bagaimana cara donasi makanan?')">Cara donasi</button>
+                <button type="button" onclick="useSuggestion('bagaimana proses distribusi makanan?')">Distribusi</button>
+                <button type="button" onclick="useSuggestion('apa fungsi monitoring di foodrescue?')">Monitoring</button>
+              </div>
 
-            <div id="chatbotResult" class="result-box muted">Belum ada pesan chatbot.</div>
+              <div class="chat-input">
+                <textarea id="chatMessage" rows="1" placeholder="Ketik pertanyaan kamu..."></textarea>
+                <button type="button" onclick="sendChatbotMessage()">Kirim</button>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section class="card">
-            <div class="section-header">
-                <div>
-                    <h2>Data User</h2>
-                    <p>Data diambil dari endpoint <b>/api/users</b></p>
-                </div>
-                <button onclick="getUsers()">Tampilkan User</button>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Tipe User</th>
-                            <th>Kota</th>
-                            <th>Verifikasi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        <tr>
-                            <td colspan="6" class="empty">Data user belum dimuat</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <section id="profileSection" class="page-section hidden">
+          <div class="card">
+            <h2>Profil User</h2>
+            <div id="profileDetail"></div>
+          </div>
         </section>
+      </section>
+    </section>
+  </main>
 
-        <section class="card">
-            <div class="section-header">
-                <div>
-                    <h2>Data Food Surplus</h2>
-                    <p>Data diambil dari endpoint <b>/api/food-surplus</b></p>
-                </div>
-                <button onclick="getFoodSurplus()">Tampilkan Food Surplus</button>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Donor</th>
-                            <th>Tipe Donor</th>
-                            <th>Jenis Makanan</th>
-                            <th>Kategori</th>
-                            <th>Jumlah KG</th>
-                            <th>Kota</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="foodTableBody">
-                        <tr>
-                            <td colspan="7" class="empty">Data makanan belum dimuat</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
